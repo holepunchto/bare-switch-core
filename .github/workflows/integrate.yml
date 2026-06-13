@@ -1,0 +1,21 @@
+name: Integrate
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+permissions:
+  contents: read
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    name: Integrate
+    steps:
+      - uses: holepunchto/actions/bare-base@v1
+      - run: npm run lint
+      - run: npm test
+      # Generated code is up to date: regenerate and fail if spec/ drifted.
+      - run: npm run schema
+      - run: git diff --exit-code spec
