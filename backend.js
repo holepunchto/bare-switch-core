@@ -1,10 +1,7 @@
-/* global BareKit */
-
 // The Bare worklet: the "backend" of the app, running on its own thread inside
 // the host app's process (macOS, iOS, ...). It owns a Hyperswarm node - a real
-// peer-to-peer connection
-// to every other copy of this app on the same topic - and exposes a typed hrpc
-// interface to the native Swift UI over the BareKit IPC channel.
+// peer-to-peer connection to every other copy of this app on the same topic -
+// and exposes a typed hrpc interface to the native Swift UI over the IPC channel.
 //
 // There is no server anywhere. Two instances of the app find each other through
 // the distributed hash table and talk directly, end-to-end encrypted.
@@ -17,9 +14,9 @@ const Hyperswarm = require('hyperswarm')
 const HRPC = require('./spec/hrpc')
 const Switch = require('./lib/switch')
 
-// `BareKit` is injected by the host; `BareKit.IPC` is the duplex byte stream to
-// the Swift side. hrpc rides on top of it and handles all framing/encoding.
-const { IPC } = BareKit
+// `Bare.IPC` is the duplex byte stream to the Swift side injected by the host.
+// hrpc rides on top of it and handles all framing/encoding.
+const { IPC } = Bare
 const rpc = new HRPC(IPC)
 
 // Every copy of the app joins the same 32-byte topic, so they all meet on the
