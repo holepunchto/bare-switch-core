@@ -9,10 +9,15 @@ on:
 permissions:
   contents: read
 jobs:
-  integrate:
+  lint:
     runs-on: ubuntu-latest
-    name: Integrate
+    name: Lint
+    steps:
+      - uses: holepunchto/actions/node-base@v1
+      - run: npm run lint
+  test:
+    runs-on: ubuntu-latest
+    name: Test
     steps:
       - uses: holepunchto/actions/bare-base@v1
-      - run: npm run lint
       - run: npm test
