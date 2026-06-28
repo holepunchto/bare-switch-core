@@ -24,7 +24,9 @@
   },
   "devDependencies": {
     "brittle": "^4.0.2",
+    "hrpc-c": "^0.1.0",
     "hrpc-swift": "^0.2.0",
+    "hyperschema-c": "^0.4.0",
     "hyperschema-swift": "^0.3.0",
     "lunte": "^1.8.0",
     "prettier": "^3.4.2",
