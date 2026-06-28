@@ -111,8 +111,13 @@ SwiftHRPC.toDisk(swiftHrpc, HRPC_DIR, {
 })
 
 // --- Emit the C side (for native hosts, e.g. bare-linux), into the same spec/ dirs ---
+//
+// Seed from the on-disk schema (not a fresh builder), because CHyperschema.toDisk
+// rewrites spec/schema/schema.json - the same file the JS block above owns. Reading
+// the just-written state keeps the two writers' output identical even as the schema
+// evolves; a fresh builder would ignore prior version/ordering and could clobber it.
 
-const cSchema = CHyperschema.from(null)
+const cSchema = CHyperschema.from(SCHEMA_DIR)
 defineTypes(cSchema.namespace(NS))
 
 const cHrpc = new CHRPC(cSchema, null, {
