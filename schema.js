@@ -1,12 +1,13 @@
-// One schema, two runtimes.
+// One schema, many runtimes.
 //
-// This single file defines the wire protocol once and emits it for both sides
+// This single file defines the wire protocol once and emits it for every side
 // of the app, all under spec/ (the conventional home for generated code):
 //
-//   - the Bare worklet (JavaScript): spec/schema, spec/hrpc
+//   - the Bare worklet (JavaScript): spec/schema, spec/hrpc (index.js, *.json)
 //   - the native macOS UI (Swift):   the same dirs (Package.swift + Sources)
+//   - native hosts (C, e.g. bare-linux): the same dirs (sync_*.{h,c} + CMakeLists.txt)
 //
-// The Swift UI and the Bare backend speak a typed, generated protocol with no
+// Each UI and the Bare backend speak a typed, generated protocol with no
 // hand-written byte parsing on either side. Edit the definitions below and
 // re-run `npm run schema` (the Xcode build re-runs it too).
 
@@ -16,6 +17,8 @@ const Hyperschema = require('hyperschema')
 const HRPCBuilder = require('hrpc')
 const SwiftHyperschema = require('hyperschema-swift')
 const SwiftHRPC = require('hrpc-swift')
+const CHyperschema = require('hyperschema-c')
+const CHRPC = require('hrpc-c')
 
 const ROOT = __dirname
 
@@ -106,5 +109,24 @@ SwiftHRPC.toDisk(swiftHrpc, HRPC_DIR, {
   schemaPackageName: 'Schema',
   schemaPackageId: 'schema'
 })
+
+// --- Emit the C side (for native hosts, e.g. bare-linux), into the same spec/ dirs ---
+//
+// Seed from the on-disk schema (not a fresh builder), because CHyperschema.toDisk
+// rewrites spec/schema/schema.json - the same file the JS block above owns. Reading
+// the just-written state keeps the two writers' output identical even as the schema
+// evolves; a fresh builder would ignore prior version/ordering and could clobber it.
+
+const cSchema = CHyperschema.from(SCHEMA_DIR)
+defineTypes(cSchema.namespace(NS))
+
+const cHrpc = new CHRPC(cSchema, null, {
+  hrpcDir: HRPC_DIR,
+  schemaDir: SCHEMA_DIR
+})
+defineCommands(cHrpc.namespace(NS))
+
+CHyperschema.toDisk(cSchema, SCHEMA_DIR)
+CHRPC.toDisk(cHrpc, HRPC_DIR)
 
 console.log('Wrote generated code to', path.relative(ROOT, path.dirname(SCHEMA_DIR)))
