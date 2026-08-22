@@ -9,7 +9,9 @@
     "url": "git+https://github.com/holepunchto/bare-switch-core.git"
   },
   "exports": {
-    ".": "./backend.js"
+    ".": "./backend.js",
+    "./session": "./lib/session.js",
+    "./switch": "./lib/switch.js"
   },
   "scripts": {
     "schema": "node schema.js",
