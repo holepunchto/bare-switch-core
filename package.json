@@ -11,7 +11,8 @@
   "exports": {
     ".": "./backend.js",
     "./session": "./lib/session.js",
-    "./switch": "./lib/switch.js"
+    "./switch": "./lib/switch.js",
+    "./spec/hrpc": "./spec/hrpc/index.js"
   },
   "scripts": {
     "schema": "node schema.js",
